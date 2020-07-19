@@ -31,18 +31,28 @@ class JWTAuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|between:2,100',
+            'nama' => 'required|between:2,100',
             'email' => 'required|email|unique:users|max:50',
             'password' => 'required|confirmed|string|min:6',
+            'jenis_kelamin' => 'required|string|between:4,6',
+            'tanggal_lahir' => 'required|date',
+            'alamat' => 'required|string|max:250',
+            'no_telefon' => 'required|string|max:18',
+            'jabatan' => 'required|string|max:50',
+            'pas_foto' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
+        $pas_foto = $request->file('pas_foto');
+        $newName = $pas_foto->getClientOriginalName();
+        $pas_foto->move('pas_foto', $newName);
+
         $user = User::create(array_merge(
             $validator->validated(),
-            ['password' => bcrypt($request->password)]
+            ['password' => bcrypt($request->password), 'pas_foto' => $newName]
         ));
 
         return response()->json([
@@ -59,7 +69,7 @@ class JWTAuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'bail|required|email',
+            'email' => 'required|email',
             'password' => 'required|string|min:6',
         ]);
 
@@ -81,7 +91,14 @@ class JWTAuthController extends Controller
      */
     public function profile()
     {
-        return response()->json(Auth::user());
+        try {
+            $user = Auth::user();
+        } catch (JWTException $e) {
+            return response()->json([
+                'message' => $e
+            ], 500);
+        }
+        return response()->json($user);
     }
 
     /**

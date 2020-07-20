@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
                 'alamat' => $faker->address,
                 'no_telefon' => $faker->phoneNumber,
                 'jabatan' => $fakerUS->jobTitle,
-                'pas_foto' => $faker->image('public/pas_foto', 300, 400, "people", false),       // http://localhost:8000/storage/pas_foto/xxx.jpg
+                'pas_foto' => $faker->image('public/pas_foto', 300, 400, "people", true),       // http://localhost:8000/storage/pas_foto/xxx.jpg
                 'created_at' => Carbon\Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon\Carbon::now()->format('Y-m-d H:i:s')
             ]);

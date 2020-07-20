@@ -25,3 +25,13 @@ Route::group([
     Route::post('refresh', 'JWTAuthController@refresh');
     Route::get('profile', 'JWTAuthController@profile');
 });
+
+Route::group([
+    'middleware' => 'api'
+], function ($router) {
+    Route::get('/absensi', 'AbsensiController@index');
+    Route::get('/absensi/{id}', 'AbsensiController@show');
+    Route::post('/absensi', 'AbsensiController@store');
+    Route::patch('/absensi/{id}', 'AbsensiController@update');
+    Route::delete('/absensi/{id}', 'AbsensiController@destroy');
+});

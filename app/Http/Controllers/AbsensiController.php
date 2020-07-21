@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Absensi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AbsensiController extends Controller
 {
@@ -56,33 +57,29 @@ class AbsensiController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $id_user = $request->input('id_user');
-        $latitude = $request->input('latitude');
-        $longitude = $request->input('longitude');
-        $tanggal_masuk = $request->input('tanggal_masuk');
-        $waktu_masuk = $request->input('waktu_masuk');
-        $waktu_keluar = $request->input('waktu_keluar');
-        $aktivitas = $request->input('aktivitas');
 
-        $data = new Absensi();
-        $data->id_user = $id_user;
-        $data->latitude = $latitude;
-        $data->longitude = $longitude;
-        $data->tanggal_masuk = $tanggal_masuk;
-        $data->waktu_masuk = $waktu_masuk;
-        $data->waktu_keluar = $waktu_keluar;
-        $data->aktivitas = $aktivitas;
+        $validator = Validator::make($request->all(), [
+            'id_user' => 'required',
+            'latitude' => 'required|string',
+            'longitude' => 'required|string',
+            'tanggal_masuk' => 'required|date',
+            'waktu_masuk' => 'required|date_format:H:i',
+            'waktu_keluar' => 'required|date_format:H:i|after:waktu_masuk',
+            'aktivitas' => 'required|string|max:255',
+        ]);
 
-        if ($data->save()) {
-            $res['message'] = "Sukses membuat absensi baru";
-            $res['value'] = $data;
-            return response($res);
-        } else {
-            $res['message'] = "Gagal membuat absensi baru";
-            $res['value'] = $data;
-            return response($res);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
+
+        $absen = Absensi::create(array_merge(
+            $validator->validated()
+        ));
+
+        return response()->json([
+            'message' => 'Absensi berhasil tercatat',
+            'data' => $absen
+        ], 201);
     }
 
     /**

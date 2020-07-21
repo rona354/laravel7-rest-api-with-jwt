@@ -38,6 +38,7 @@ class JWTAuthController extends Controller
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string|max:250',
             'no_telefon' => 'required|string|max:18',
+            'agama' => 'required|string|max:12',
             'jabatan' => 'required|string|max:50',
             'pas_foto' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
